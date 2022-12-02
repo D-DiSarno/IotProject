@@ -3,6 +3,14 @@
 #include"Credential.h"
 #include <ArduinoJson.h>
 #include <EEPROM.h>
+#include <SPI.h>
+#include <MFRC522.h>
+
+#define SS_PIN 10
+#define RST_PIN 5
+
+String card1 = "FFFFFFFF";  // Change this value to the UID of your card.
+MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 StaticJsonDocument<512>doc;
 //wifi>
@@ -12,3 +20,5 @@ EepromStream eepromStream(address, 512);
  void read();
 Credential credenziali [2];
 void getUserName();
+
+void checkRFID();
