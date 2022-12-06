@@ -18,7 +18,7 @@ serializeJson(doc, eepromStream);
 Serial.println("STORE-FATTO");
 }
 void read(){
-  StaticJsonDocument<500> doc;
+  //StaticJsonDocument<500> doc;
   EepromStream eepromStream(0, 500);
   deserializeJson(doc, eepromStream);
 
@@ -28,17 +28,23 @@ void read(){
   
 }
 void getUserName(){
-  
+ 
    EepromStream eepromStream(0, 500);
   deserializeJson(doc, eepromStream);
+ JsonArray users = doc.as<JsonArray>();
+ Serial.println("array riempito");
+
+  //String name= users.[(String("user"))];
+
  // JsonObject user=doc.to<
   //Serial.println(doc.data().toArray().getElement(0)));
  // credenziali[0].setName(doc["credentials"][0]["name"]);
- // Serial.println(credenziali[0].getName());
+for(JsonVariant v :users) {
+
+}
 
 }
 //modify
 //create by user
 //delete
 //search
-//get
