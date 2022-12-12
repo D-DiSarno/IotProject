@@ -1,6 +1,6 @@
-void store(){
+void store() {
 
-  JsonArray users = doc.to<JsonArray>();
+  // JsonArray users = doc.to<JsonArray>();
 
   StaticJsonDocument<JSON_OBJECT_SIZE(2)> doc1;
   JsonObject user_1 = doc1.to<JsonObject>();
@@ -14,10 +14,10 @@ void store(){
   user_2["password"] = "12345";
   users.add(user_2);
 
-serializeJson(doc, eepromStream);
-Serial.println("STORE-FATTO");
+  serializeJson(doc, eepromStream);
+  Serial.println("STORE-FATTO");
 }
-void read(){
+void read() {
   //StaticJsonDocument<500> doc;
   EepromStream eepromStream(0, 500);
   deserializeJson(doc, eepromStream);
@@ -25,26 +25,62 @@ void read(){
 
 
   serializeJsonPretty(doc, Serial);
-  
 }
-void getUserName(){
- 
-   EepromStream eepromStream(0, 500);
+
+void getUser(String filter) {
+
   deserializeJson(doc, eepromStream);
- JsonArray users = doc.as<JsonArray>();
- Serial.println("array riempito");
-
-  //String name= users.[(String("user"))];
-
- // JsonObject user=doc.to<
-  //Serial.println(doc.data().toArray().getElement(0)));
- // credenziali[0].setName(doc["credentials"][0]["name"]);
-for(JsonVariant v :users) {
-
+  JsonArray users = doc.as<JsonArray>();
+  Serial.println("array riempito");
+  //String name=users[0]["user"];Serial.println(name);
+  for (int i = 0; i < users.size(); i++) {
+    String name = users[i]["user"];
+    if (name == filter) {
+      Serial.println(name);
+      String password = users[i]["password"];
+      Serial.println(password);
+    }
+  }
 }
 
+void createUser(String name, char * password) {
+  //
+  
+ // deserializeJson(doc, eepromStream);
+  StaticJsonDocument<JSON_OBJECT_SIZE(2)> doc1;
+  JsonObject user_1 = doc1.to<JsonObject>();
+  user_1["user"]="NAME";
+  //user_1["password"].set(password);
+  //users.add(user_1);
+  Serial.println(user_1.size());
+  //users.add(user_1);
+Serial.println(name);
+  Serial.println("USER AGGIUNTO:");
+  Serial.println(name);
+  Serial.println(password);
+  // serializeJson(doc, eepromStream);
+}
+
+void deleteUser(String filter) {
+
+  deserializeJson(doc, eepromStream);
+  JsonArray users = doc.as<JsonArray>();
+  Serial.println("array riempito");
+  //String name=users[0]["user"];Serial.println(name);
+
+  for (int i = 0; i < users.size(); i++) {
+    String name = users[i]["user"];
+
+    if (name == filter) {
+
+      users.remove(i);
+    }
+  }
+  serializeJson(doc, eepromStream);
+}
+void clearJson() {
+  deserializeJson(doc, eepromStream);
+  doc.clear();
 }
 //modify
-//create by user
-//delete
-//search
+//duplicati

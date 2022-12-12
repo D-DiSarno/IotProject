@@ -1,5 +1,4 @@
 void loop(){
-//checkRFID();
-getUserName();
-  
-}
+checkRFID();
+
+} 
