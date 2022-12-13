@@ -1,4 +1,39 @@
-void store() {
+void createUser(String username, String password) {
+  StaticJsonDocument<JSON_OBJECT_SIZE(5)> docUser;
+  JsonObject user = docUser.to<JsonObject>();
+  user["user"] = username;
+  user["password"] = password;
+
+  StaticJsonDocument<JSON_OBJECT_SIZE(0)> docCredentials;
+  JsonObject credentials = docCredentials.to<JsonObject>();
+  user["credentials"] = credentials;
+
+  serializeJson(docUser, eepromStream);
+}
+
+JsonObject logUser(String username, String password) {
+  StaticJsonDocument<JSON_OBJECT_SIZE(5)> docUser;
+  deserializeJson(docUser, eepromStream);
+  JsonObject userObject = docUser.as<JsonObject>();
+  
+  if (userObject["user"] == username && userObject["password"] == password) {
+    return userObject;
+  } else {
+    StaticJsonDocument<JSON_OBJECT_SIZE(2)> docError;
+    JsonObject errorObject = docError.as<JsonObject>();
+    errorObject["error"] = "error";
+    return errorObject;
+  }
+}
+
+void storePassword(String service, String password) {
+
+}
+
+void deletePassword() {}
+String getPassword() {}
+
+void testStore() {
 
   // JsonArray users = doc.to<JsonArray>();
 
@@ -17,6 +52,13 @@ void store() {
   serializeJson(doc, eepromStream);
   Serial.println("STORE-FATTO");
 }
+
+void clearData() {
+  deserializeJson(doc, eepromStream);
+  doc.clear();
+}
+
+/*
 void read() {
   //StaticJsonDocument<500> doc;
   EepromStream eepromStream(0, 500);
@@ -78,9 +120,20 @@ void deleteUser(String filter) {
   }
   serializeJson(doc, eepromStream);
 }
-void clearJson() {
-  deserializeJson(doc, eepromStream);
-  doc.clear();
-}
+
 //modify
 //duplicati
+
+/* 
+[
+  {
+    "user": "Mario",
+    "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+    "credentials": {
+      "google": "abc123",
+      "facebook": "abc456",
+      "amazon": "abc789"
+    }
+  }
+]
+*/

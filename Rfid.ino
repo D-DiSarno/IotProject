@@ -40,7 +40,7 @@ void checkRFID(){
   String readid = String(str);
 
   if (readid == card1) {
-    getUser(card1);
+    //getUser(card1);
    //AUTH
   
   } else {

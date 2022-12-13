@@ -1,6 +1,5 @@
 #include <StreamUtils.h>
 
-#include"Credential.h"
 #include <ArduinoJson.h>
 #include <EEPROM.h>
 #include <SPI.h>
