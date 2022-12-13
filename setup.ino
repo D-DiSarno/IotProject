@@ -6,7 +6,7 @@ void setup() {
   //store();
   //read();
   //createUser("Bowser","ABCDEF");
-  read();
+  //read();
   //deleteUser("Bowser");
   //clearJson();
   //getUser("Mario");

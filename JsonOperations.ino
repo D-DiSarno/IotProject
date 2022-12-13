@@ -11,18 +11,18 @@ void createUser(String username, String password) {
   serializeJson(docUser, eepromStream);
 }
 
-JsonObject logUser(String username, String password) {
-  StaticJsonDocument<JSON_OBJECT_SIZE(5)> docUser;
+StaticJsonDocument<500> logUser(String username, String password) {
+  StaticJsonDocument<500> docUser;
   deserializeJson(docUser, eepromStream);
   JsonObject userObject = docUser.as<JsonObject>();
-  
+
   if (userObject["user"] == username && userObject["password"] == password) {
-    return userObject;
+    return docUser;
   } else {
-    StaticJsonDocument<JSON_OBJECT_SIZE(2)> docError;
-    JsonObject errorObject = docError.as<JsonObject>();
-    errorObject["error"] = "error";
-    return errorObject;
+    StaticJsonDocument<500> docError;
+    JsonObject error = docError.to<JsonObject>();
+    error["error"] = "error";
+    return docError;
   }
 }
 

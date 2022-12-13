@@ -17,7 +17,6 @@ int address = 0;
 EepromStream eepromStream(address, 512);
  void store();
  void read();
-Credential credenziali [2];
 void clear();
 void getUser();
 void createUser(String,String );
