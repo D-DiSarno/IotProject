@@ -1,7 +1,3 @@
-#include <StreamUtils.h>
-
-#include <ArduinoJson.h>
-#include <EEPROM.h>
 #include <SPI.h>
 #include <MFRC522.h>
 

@@ -1,36 +1,40 @@
-void createUser(String username, String password) {
-  StaticJsonDocument<JSON_OBJECT_SIZE(5)> docUser;
+#include <ArduinoJson.h>
+
+#include "FS.h"
+#include "SPIFFS.h"
+#define FORMAT_SPIFFS_IF_FAILED false
+
+int createUser(String username, String password) {
+  if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
+    return 1;
+  }
+
+  DynamicJsonDocument docUser(2048);
   JsonObject user = docUser.to<JsonObject>();
   user["user"] = username;
   user["password"] = password;
 
-  StaticJsonDocument<JSON_OBJECT_SIZE(0)> docCredentials;
+  DynamicJsonDocument docCredentials(2048);
   JsonObject credentials = docCredentials.to<JsonObject>();
   user["credentials"] = credentials;
 
-  serializeJson(docUser, eepromStream);
-}
-
-StaticJsonDocument<500> logUser(String username, String password) {
-  StaticJsonDocument<500> docUser;
-  deserializeJson(docUser, eepromStream);
-  JsonObject userObject = docUser.as<JsonObject>();
-
-  if (userObject["user"] == username && userObject["password"] == password) {
-    return docUser;
+  File file = SPIFFS.open("/" + username + ".json", FILE_WRITE);
+  if (!file) {
+    return 1;
   } else {
-    StaticJsonDocument<500> docError;
-    JsonObject error = docError.to<JsonObject>();
-    error["error"] = "error";
-    return docError;
+    serializeJsonPretty(docUser, file);
+    file.close();
   }
+
+  return 0;
 }
 
-void storePassword(String service, String password) {
+int removeUser() {}
 
-}
+void storePassword() {}
 
 void deletePassword() {}
+
 String getPassword() {}
 
 void testStore() {
