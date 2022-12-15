@@ -2,11 +2,14 @@
 
 #include "FS.h"
 #include "SPIFFS.h"
-#define FORMAT_SPIFFS_IF_FAILED false
 
 int createUser(String username, String password) {
-  if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
+  if (!SPIFFS.begin(true)) {
     return 1;
+  }
+
+  if (SPIFFS.exists("/" + username + ".json")) {
+    return 2;
   }
 
   DynamicJsonDocument docUser(2048);
