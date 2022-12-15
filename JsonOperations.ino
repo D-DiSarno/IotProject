@@ -40,6 +40,15 @@ void deletePassword() {}
 
 String getPassword() {}
 
+void clearMemory() {
+  if (!SPIFFS.begin(true)) {
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    return;
+  }
+  
+  SPIFFS.format();
+}
+
 void testStore() {
 
   // JsonArray users = doc.to<JsonArray>();
@@ -58,11 +67,6 @@ void testStore() {
 
   serializeJson(doc, eepromStream);
   Serial.println("STORE-FATTO");
-}
-
-void clearData() {
-  deserializeJson(doc, eepromStream);
-  doc.clear();
 }
 
 /*
