@@ -32,13 +32,23 @@ int createUser(String username, String password) {
   return 0;
 }
 
-int removeUser() {}
+int removeUser(String username) {
+  if (!SPIFFS.begin(true)) {
+    return 1;
+  }
 
-void storePassword() {}
+  if (!SPIFFS.remove("/" + username + ".json")) {
+    return 1;
+  }
 
-void deletePassword() {}
+  return 0;
+}
 
-String getPassword() {}
+void storePassword(String username, String password, String serviceName, String servicePassword) {}
+
+void deletePassword(String username, String password, String serviceName) {}
+
+String getPassword(String username, String password, String serviceName) {}
 
 void clearMemory() {
   if (!SPIFFS.begin(true)) {
