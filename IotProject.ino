@@ -7,6 +7,7 @@
 String card1 = "FFFFFFFF";  // Change this value to the UID of your card.
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
+/*
 StaticJsonDocument<512>doc;
 //wifi>
 int address = 0;

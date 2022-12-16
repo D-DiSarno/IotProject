@@ -32,6 +32,24 @@ int createUser(String username, String password) {
   return 0;
 }
 
+bool logUser(String username, String password) {
+  if (!SPIFFS.begin(true)) {
+    return false;
+  }
+
+  DynamicJsonDocument docUser(2048);
+  File file = SPIFFS.open("/" + username + ".json");
+  deserializeJson(docUser, file);
+  file.close();
+  JsonObject user = docUser.as<JsonObject>();
+
+  if (user["password"] == password) {
+    return true;
+  }
+
+  return false;
+}
+
 int removeUser(String username) {
   if (!SPIFFS.begin(true)) {
     return 1;
@@ -44,11 +62,85 @@ int removeUser(String username) {
   return 0;
 }
 
-void storePassword(String username, String password, String serviceName, String servicePassword) {}
+int storePassword(String username, String password, String serviceName, String servicePassword) {
+  if (!SPIFFS.begin(true)) {
+    return 1;
+  }
 
-void deletePassword(String username, String password, String serviceName) {}
+  if (!logUser(username, password)) {
+    return 2;
+  }
 
-String getPassword(String username, String password, String serviceName) {}
+  DynamicJsonDocument docUser(2048);
+  File file1 = SPIFFS.open("/" + username + ".json");
+  deserializeJson(docUser, file1);
+  file1.close();
+  JsonObject user = docUser.as<JsonObject>();
+
+  //JsonObject credentials = user["credentials"];
+  //DynamicJsonDocument docCredentials(2048);
+  //JsonObject credentials = docCredentials.to<JsonObject>();
+  credentials[serviceName] = servicePassword;
+  user["credentials"] = credentials;
+
+  File file2 = SPIFFS.open("/" + username + ".json", FILE_WRITE);
+  if (!file2) {
+    return 1;
+  } else {
+    serializeJsonPretty(docUser, file2);
+    file2.close();
+  }
+
+  return 0;  
+}
+
+int deletePassword(String username, String password, String serviceName) {
+  if (!SPIFFS.begin(true)) {
+    return 1;
+  }
+
+  DynamicJsonDocument docUser(2048);
+  File file = SPIFFS.open("/" + username + ".json");
+  deserializeJson(docUser, file);
+  file.close();
+  JsonObject user = docUser.to<JsonObject>();
+
+  if (user["password"] != password) {
+    return 1;
+  }
+
+  JsonObject credentials = user["credentials"];
+  credentials.remove(serviceName);
+
+  file = SPIFFS.open("/" + username + ".json", FILE_WRITE);
+  if (!file) {
+    return 1;
+  } else {
+    serializeJsonPretty(docUser, file);
+    file.close();
+  }
+
+  return 0;
+}
+
+String getPassword(String username, String password, String serviceName) {
+  if (!SPIFFS.begin(true)) {
+    return "";
+  }
+
+  DynamicJsonDocument docUser(2048);
+  File file = SPIFFS.open("/" + username + ".json");
+  deserializeJson(docUser, file);
+  file.close();
+  JsonObject user = docUser.to<JsonObject>();
+
+  if (user["password"] != password) {
+    return "";
+  }
+
+  JsonObject credentials = user["credentials"];
+  return credentials[serviceName];
+}
 
 void clearMemory() {
   if (!SPIFFS.begin(true)) {
@@ -58,103 +150,3 @@ void clearMemory() {
   
   SPIFFS.format();
 }
-
-void testStore() {
-
-  // JsonArray users = doc.to<JsonArray>();
-
-  StaticJsonDocument<JSON_OBJECT_SIZE(2)> doc1;
-  JsonObject user_1 = doc1.to<JsonObject>();
-  user_1["user"] = "Mario";
-  user_1["password"] = "aaabbbccc";
-  users.add(user_1);
-
-  StaticJsonDocument<JSON_OBJECT_SIZE(2)> doc2;
-  JsonObject user_2 = doc2.to<JsonObject>();
-  user_2["user"] = "Luigi";
-  user_2["password"] = "12345";
-  users.add(user_2);
-
-  serializeJson(doc, eepromStream);
-  Serial.println("STORE-FATTO");
-}
-
-/*
-void read() {
-  //StaticJsonDocument<500> doc;
-  EepromStream eepromStream(0, 500);
-  deserializeJson(doc, eepromStream);
-
-
-
-  serializeJsonPretty(doc, Serial);
-}
-
-void getUser(String filter) {
-
-  deserializeJson(doc, eepromStream);
-  JsonArray users = doc.as<JsonArray>();
-  Serial.println("array riempito");
-  //String name=users[0]["user"];Serial.println(name);
-  for (int i = 0; i < users.size(); i++) {
-    String name = users[i]["user"];
-    if (name == filter) {
-      Serial.println(name);
-      String password = users[i]["password"];
-      Serial.println(password);
-    }
-  }
-}
-
-void createUser(String name, char * password) {
-  //
-  
- // deserializeJson(doc, eepromStream);
-  StaticJsonDocument<JSON_OBJECT_SIZE(2)> doc1;
-  JsonObject user_1 = doc1.to<JsonObject>();
-  user_1["user"]="NAME";
-  //user_1["password"].set(password);
-  //users.add(user_1);
-  Serial.println(user_1.size());
-  //users.add(user_1);
-Serial.println(name);
-  Serial.println("USER AGGIUNTO:");
-  Serial.println(name);
-  Serial.println(password);
-  // serializeJson(doc, eepromStream);
-}
-
-void deleteUser(String filter) {
-
-  deserializeJson(doc, eepromStream);
-  JsonArray users = doc.as<JsonArray>();
-  Serial.println("array riempito");
-  //String name=users[0]["user"];Serial.println(name);
-
-  for (int i = 0; i < users.size(); i++) {
-    String name = users[i]["user"];
-
-    if (name == filter) {
-
-      users.remove(i);
-    }
-  }
-  serializeJson(doc, eepromStream);
-}
-
-//modify
-//duplicati
-
-/* 
-[
-  {
-    "user": "Mario",
-    "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
-    "credentials": {
-      "google": "abc123",
-      "facebook": "abc456",
-      "amazon": "abc789"
-    }
-  }
-]
-*/
