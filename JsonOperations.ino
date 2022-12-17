@@ -3,6 +3,17 @@
 #include "FS.h"
 #include "SPIFFS.h"
 
+struct Credential {
+  String serviceName;
+  String servicePassword;
+};
+
+struct User {
+  String username;
+  String password;
+  Credential credentials[];
+};
+
 int createUser(String username, String password) {
   if (!SPIFFS.begin(true)) {
     return 1;
@@ -12,14 +23,18 @@ int createUser(String username, String password) {
     return 2;
   }
 
-  DynamicJsonDocument docUser(2048);
-  JsonObject user = docUser.to<JsonObject>();
-  user["user"] = username;
-  user["password"] = password;
+  User user;
+  user.username = username;
+  user.password = password;
 
-  DynamicJsonDocument docCredentials(2048);
-  JsonObject credentials = docCredentials.to<JsonObject>();
-  user["credentials"] = credentials;
+  StaticJsonDocument<2048> docUser;
+  JsonObject userObject = docUser.to<JsonObject>();
+  userObject["user"] = user.username;
+  userObject["password"] = user.password;
+
+  StaticJsonDocument<2048> docCredentials;
+  JsonArray credentialsObject = docCredentials.to<JsonArray>();
+  userObject["credentials"] = credentialsObject;
 
   File file = SPIFFS.open("/" + username + ".json", FILE_WRITE);
   if (!file) {
@@ -78,8 +93,9 @@ int storePassword(String username, String password, String serviceName, String s
   JsonObject user = docUser.as<JsonObject>();
 
   //JsonObject credentials = user["credentials"];
-  //DynamicJsonDocument docCredentials(2048);
-  //JsonObject credentials = docCredentials.to<JsonObject>();
+  DynamicJsonDocument docCredentials(2048);
+  deserializeJson(docCredentials, user["credentials"]);
+  JsonObject credentials = docCredentials.to<JsonObject>();
   credentials[serviceName] = servicePassword;
   user["credentials"] = credentials;
 
