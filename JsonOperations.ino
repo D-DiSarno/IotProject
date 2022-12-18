@@ -3,17 +3,6 @@
 #include "FS.h"
 #include "SPIFFS.h"
 
-struct Credential {
-  String serviceName;
-  String servicePassword;
-};
-
-struct User {
-  String username;
-  String password;
-  Credential credentials[];
-};
-
 int createUser(String username, String password) {
   if (!SPIFFS.begin(true)) {
     return 1;
@@ -23,24 +12,16 @@ int createUser(String username, String password) {
     return 2;
   }
 
-  User user;
-  user.username = username;
-  user.password = password;
-
-  StaticJsonDocument<2048> docUser;
-  JsonObject userObject = docUser.to<JsonObject>();
-  userObject["user"] = user.username;
-  userObject["password"] = user.password;
-
-  StaticJsonDocument<2048> docCredentials;
-  JsonArray credentialsObject = docCredentials.to<JsonArray>();
-  userObject["credentials"] = credentialsObject;
+  StaticJsonDocument<2048> doc;
+  doc["user"] = username;
+  doc["password"] = password;
+  JsonArray credentials = doc.createNestedArray("credentials");
 
   File file = SPIFFS.open("/" + username + ".json", FILE_WRITE);
   if (!file) {
     return 1;
   } else {
-    serializeJsonPretty(docUser, file);
+    serializeJsonPretty(doc, file);
     file.close();
   }
 
@@ -52,11 +33,11 @@ bool logUser(String username, String password) {
     return false;
   }
 
-  DynamicJsonDocument docUser(2048);
+  DynamicJsonDocument doc(2048);
   File file = SPIFFS.open("/" + username + ".json");
-  deserializeJson(docUser, file);
+  deserializeJson(doc, file);
   file.close();
-  JsonObject user = docUser.as<JsonObject>();
+  JsonObject user = doc.as<JsonObject>();
 
   if (user["password"] == password) {
     return true;
@@ -77,7 +58,7 @@ int removeUser(String username) {
   return 0;
 }
 
-int storePassword(String username, String password, String serviceName, String servicePassword) {
+int addPassword(String username, String password, String serviceName, String servicePassword) {
   if (!SPIFFS.begin(true)) {
     return 1;
   }
@@ -86,28 +67,24 @@ int storePassword(String username, String password, String serviceName, String s
     return 2;
   }
 
-  DynamicJsonDocument docUser(2048);
-  File file1 = SPIFFS.open("/" + username + ".json");
-  deserializeJson(docUser, file1);
-  file1.close();
-  JsonObject user = docUser.as<JsonObject>();
+  StaticJsonDocument<2048> doc;
+  File file = SPIFFS.open("/" + username + ".json");
+  deserializeJson(doc, file);
+  file.close();
 
-  //JsonObject credentials = user["credentials"];
-  DynamicJsonDocument docCredentials(2048);
-  deserializeJson(docCredentials, user["credentials"]);
-  JsonObject credentials = docCredentials.to<JsonObject>();
-  credentials[serviceName] = servicePassword;
-  user["credentials"] = credentials;
+  JsonObject credential = doc["credentials"].createNestedObject();
+  credential["service"] = serviceName;
+  credential["password"] = servicePassword;
 
-  File file2 = SPIFFS.open("/" + username + ".json", FILE_WRITE);
-  if (!file2) {
+  file = SPIFFS.open("/" + username + ".json", FILE_WRITE);
+  if (!file) {
     return 1;
   } else {
-    serializeJsonPretty(docUser, file2);
-    file2.close();
+    serializeJsonPretty(doc, file);
+    file.close();
   }
 
-  return 0;  
+  return 0;
 }
 
 int deletePassword(String username, String password, String serviceName) {
@@ -115,24 +92,28 @@ int deletePassword(String username, String password, String serviceName) {
     return 1;
   }
 
-  DynamicJsonDocument docUser(2048);
-  File file = SPIFFS.open("/" + username + ".json");
-  deserializeJson(docUser, file);
-  file.close();
-  JsonObject user = docUser.to<JsonObject>();
-
-  if (user["password"] != password) {
-    return 1;
+  if (!logUser(username, password)) {
+    return 2;
   }
 
-  JsonObject credentials = user["credentials"];
-  credentials.remove(serviceName);
+  StaticJsonDocument<2048> doc;
+  File file = SPIFFS.open("/" + username + ".json");
+  deserializeJson(doc, file);
+  file.close();
+
+  JsonArray credentials = doc["credentials"];
+  for (JsonArray::iterator it=credentials.begin(); it!=credentials.end(); ++it) {
+    if ((*it)["service"] == serviceName) {
+      credentials.remove(it);
+      break;
+    }
+  }
 
   file = SPIFFS.open("/" + username + ".json", FILE_WRITE);
   if (!file) {
     return 1;
   } else {
-    serializeJsonPretty(docUser, file);
+    serializeJsonPretty(doc, file);
     file.close();
   }
 
@@ -144,18 +125,23 @@ String getPassword(String username, String password, String serviceName) {
     return "";
   }
 
-  DynamicJsonDocument docUser(2048);
-  File file = SPIFFS.open("/" + username + ".json");
-  deserializeJson(docUser, file);
-  file.close();
-  JsonObject user = docUser.to<JsonObject>();
-
-  if (user["password"] != password) {
+  if (!logUser(username, password)) {
     return "";
   }
 
-  JsonObject credentials = user["credentials"];
-  return credentials[serviceName];
+  StaticJsonDocument<2048> doc;
+  File file = SPIFFS.open("/" + username + ".json");
+  deserializeJson(doc, file);
+  file.close();
+
+  JsonArray credentials = doc["credentials"];
+  for (JsonArray::iterator it=credentials.begin(); it!=credentials.end(); ++it) {
+    if ((*it)["service"] == serviceName) {
+      return (*it)["password"];
+    }
+  }
+
+  return "";
 }
 
 void clearMemory() {
