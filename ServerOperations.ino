@@ -69,17 +69,17 @@ void stopConnectionToServer(){
 
 }
 
-void update_credentials(int op, String entry){
+void update_credentials(int op, String entry ){
   int str_len = entry.length() + 1;
   char buffer[str_len]; 
   entry.toCharArray(buffer, str_len);
       
   char *token = strtok(buffer, "-");
-  String entry_string[2]; 
+  String entry_string[4]; 
       
   switch(op){
     case 1: {
-      /*split string*/
+      /*split string*/ //ADD 
       char *data[3];
       
       for(int i = 0; i < 3 && token != NULL; i++){
@@ -92,24 +92,24 @@ void update_credentials(int op, String entry){
         String char_to_string(data[i]);
         entry_string[i-1] = cipher->encryptString(char_to_string);
       }
-      /*end split string*/
-  //FARE
-     // if(addPassword(data[0], entry_string[0], entry_string[1])){        
-    //   Serial.print("Add Success!");
+      /*end split string */
+  //Chiedere data[0] cosa sia 
+      if(addPassword(entry_string[0], entry_string[1],entry_string[2],entry_string[3])){        
+       Serial.print("Add Success!");
       
-     //   delay(3500);
-    //  }
-    //  else{
+        delay(3500);
+     }
+      else{
         Serial.print("Add Error!");
        
         delay(3500);
-    //  }
+      }
       break;
     }
     
-    case 2: {
+    case 2: { //UPDATE
       /*split string*/
-      char *data[4];
+    / char *data[4];
             
       for(int i = 0; i < 4 && token != NULL; i++){
         token = strtok(NULL, "-");
@@ -126,46 +126,38 @@ void update_credentials(int op, String entry){
           entry_string[i-2] = char_to_string;
       }
       /*end split string*/
-//  FARE
-     // if(createPassword(data[0], data[1], entry_string[0], entry_string[1])){        
-   //    Serial.print("Update Success!");
+ //data[0]
+     if(addPassword( entry_string[0], entry_string[1],entry_string[2],entry_string[3])){        
+       Serial.print("Update Success!");
         
-   //     delay(3500);
-   //   }
-    //  else{
-    //   Serial.print("Update Error!");
+       delay(3500);
+      }
+      else{
+       Serial.print("Update Error!");
        
-    //    delay(3500);
-    //  }
+       delay(3500);
+      }
       break;
     }
     
-    case 3: {
+    case 3: { //RIMUOVO
       char *data = strtok(NULL, "-");
-  //FARE
-    //  if(deletePassword(data)){        
+  
+      if(deletePassword(entry_string[0],entry_string[1],entry_string[2])){        
         Serial.print("Delete Success!");
        
         delay(3500);
-   //   }
-   //   else{
+      }
+      else{
        Serial.print("Delete Error!");
        
         delay(3500);
-    //  }
+      }
       break;
     }
     
-    case 4: {
-      break;
-    }
-    
-    case 5: {
-      break;
-    }
   }
   
   Serial.print("Esp32 connected to server ");
   return;
-}
-
+  }

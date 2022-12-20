@@ -1,7 +1,3 @@
-#include <ArduinoJson.h>
-
-#include "FS.h"
-#include "SPIFFS.h"
 
 int createUser(String username, String password) {
   if (!SPIFFS.begin(true)) {
@@ -102,7 +98,7 @@ int deletePassword(String username, String password, String serviceName) {
   file.close();
 
   JsonArray credentials = doc["credentials"];
-  for (JsonArray::iterator it=credentials.begin(); it!=credentials.end(); ++it) {
+  for (JsonArray::iterator it = credentials.begin(); it != credentials.end(); ++it) {
     if ((*it)["service"] == serviceName) {
       credentials.remove(it);
       break;
@@ -135,7 +131,7 @@ String getPassword(String username, String password, String serviceName) {
   file.close();
 
   JsonArray credentials = doc["credentials"];
-  for (JsonArray::iterator it=credentials.begin(); it!=credentials.end(); ++it) {
+  for (JsonArray::iterator it = credentials.begin(); it != credentials.end(); ++it) {
     if ((*it)["service"] == serviceName) {
       return (*it)["password"];
     }
@@ -149,6 +145,6 @@ void clearMemory() {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
-  
+
   SPIFFS.format();
 }

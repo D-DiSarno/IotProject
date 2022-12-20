@@ -7,6 +7,7 @@
 
 #include <MFRC522.h>
 
+
 #include <ArduinoJson.h>
 #include "FS.h"
 #include "SPIFFS.h"
@@ -14,8 +15,8 @@
 #define SS_PIN  5  // ESP32 pin GIOP5 
 #define RST_PIN 27 // ESP32 pin GIOP27 
 
-const char* ssid="iPhone 12 pro";
-const char* password="napoli1234";
+const char* ssid="FIBRA-DS";
+const char* password="Danielino*2!";
 
 String card1 = "FFFFFFFF";  // Change this value to the UID of your card.
 MFRC522 mfrc522(SS_PIN, RST_PIN);
@@ -107,6 +108,7 @@ const char* test_client_cert = \
                                "mYhISMFYFUel5hDP6y3HacfFAhCJpJ0V3D8u4qaGcBZCPmQpcB98hfHHlPL0kLD5\n" \
                                "cNxNs1NZ0k5xhUuS/pCbQ/nSVJauUKB54n4=\n" \
                                "-----END CERTIFICATE-----\n";
+
 
 /*
 StaticJsonDocument<512>doc;
