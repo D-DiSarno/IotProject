@@ -1,8 +1,15 @@
 #include <SPI.h>
-#include <MFRC522.h>
+
 #include <WiFi.h>
 #include "WiFiClientSecure.h"
+
 #include "Cipher.h"
+
+#include <MFRC522.h>
+
+#include <ArduinoJson.h>
+#include "FS.h"
+#include "SPIFFS.h"
 
 #define SS_PIN  5  // ESP32 pin GIOP5 
 #define RST_PIN 27 // ESP32 pin GIOP27 

@@ -65,7 +65,7 @@ void stopConnectionToServer(){
   client.stop();
   WiFi.disconnect(true);  // Disconnect from the network
   WiFi.mode(WIFI_OFF); //Switch WiFi off
-//  restart_time();
+  
 
 }
 
@@ -168,3 +168,4 @@ void update_credentials(int op, String entry){
   Serial.print("Esp32 connected to server ");
   return;
 }
+
