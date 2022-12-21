@@ -15,8 +15,8 @@
 #define SS_PIN  5  // ESP32 pin GIOP5 
 #define RST_PIN 27 // ESP32 pin GIOP27 
 
-const char* ssid="FIBRA-DS";
-const char* password="Danielino*2!";
+const char* ssid="******";
+const char* password="********";
 
 String card1 = "FFFFFFFF";  // Change this value to the UID of your card.
 MFRC522 mfrc522(SS_PIN, RST_PIN);
@@ -26,6 +26,10 @@ Cipher* cipher = new Cipher();
 const char* hostname = "example.org";
 unsigned int port = 11111;
 WiFiClientSecure client(hostname);
+
+int createUser(String,String);
+int addPassword(String , String , String , String );
+int deletePassword(String , String , String );
 
 const char* test_root_ca = \
                            "-----BEGIN CERTIFICATE-----\n" \

@@ -5,7 +5,7 @@ void setup() {
   mfrc522.PCD_Init();
 
   connectWiFi();
-
+  createUser("uno","due");
 
   char *key = "%A.Esp32_Pa66.C%";
   cipher->setKey(key);
