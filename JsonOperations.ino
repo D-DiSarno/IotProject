@@ -1,5 +1,6 @@
 
 int createUser(String username, String password) {
+  Serial.println("creo");
   if (!SPIFFS.begin(true)) {
     return 1;
   }
@@ -20,10 +21,29 @@ int createUser(String username, String password) {
     serializeJsonPretty(doc, file);
     file.close();
   }
-
+  Serial.println("CREATO");
   return 0;
 }
+int getUserPassword(String username) {
+  if (!SPIFFS.begin(true)) {
+    return 1;
+  }
 
+  DynamicJsonDocument doc(2048);
+  File file = SPIFFS.open("/" + username + ".json");
+  deserializeJson(doc, file);
+  file.close();
+  JsonObject user = doc.as<JsonObject>();
+
+  if (user["user"] == username) {
+    String pwd = user["password"];
+    Serial.println(pwd);
+    return 0;
+  }
+
+
+  return 2;
+}
 bool logUser(String username, String password) {
   if (!SPIFFS.begin(true)) {
     return false;
@@ -36,8 +56,10 @@ bool logUser(String username, String password) {
   JsonObject user = doc.as<JsonObject>();
 
   if (user["password"] == password) {
+
     return true;
   }
+
 
   return false;
 }

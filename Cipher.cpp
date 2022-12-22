@@ -48,7 +48,7 @@ void Cipher::setKey(char * key) {
       Serial.println("[cipher] cipher key length matched. Using this key.");
     #endif
     privateCipherKey = key;
-  }
+    }
 }
 
 char * Cipher::getKey() {
