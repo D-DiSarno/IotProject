@@ -1,4 +1,3 @@
-
 bool connectionToServer() {
   client.setCACert(test_root_ca);
   client.setCertificate(test_client_cert);  // for client verification
@@ -7,9 +6,6 @@ bool connectionToServer() {
 
   do {
     Serial.println("Connecting to server");
-
-
-
     delay(400);
 
     if ((millis() - start_time_listen) > 20000) {
@@ -64,7 +60,7 @@ void startCommunicationToServer(String str) {
 void stopConnectionToServer() {
   client.stop();
   WiFi.disconnect(true);  // Disconnect from the network
-  WiFi.mode(WIFI_OFF);    //Switch WiFi off
+  WiFi.mode(WIFI_OFF);    // Switch WiFi off
 }
 
 void update_credentials(int op, String entry) {
@@ -76,84 +72,241 @@ void update_credentials(int op, String entry) {
   String entry_string[4];
 
   switch (op) {
-    case 1:
-      {
-        /*split string*/  //ADD
-        char *data[3];
+    case 1: {
+      // CREA UTENTE
 
-        for (int i = 0; i < 3 && token != NULL; i++) {
-          token = strtok(NULL, "-");
-          data[i] = token;
+      // start string splitting
+      char *data[3];
+      for (int i = 0; i < 3 && token != NULL; i++) {
+        token = strtok(NULL, "-");
+        data[i] = token;
 
-          if (i == 0)
-            continue;
+        if (i == 0)
+          continue;
 
-          String char_to_string(data[i]);
-          entry_string[i - 1] = cipher->encryptString(char_to_string);
-        }
-        /*end split string */
-        //Chiedere data[0] cosa sia
-        if (addPassword(entry_string[0], entry_string[1], entry_string[2], entry_string[3])) {
-          Serial.print("Add Success!");
-
-          delay(3500);
-        } else {
-          Serial.print("Add Error!");
-
-          delay(3500);
-        }
-        break;
+        String char_to_string(data[i]);
+        entry_string[i - 1] = char_to_string;
       }
+      // end string splitting
+
+      int res = createUser(entry_string[0], entry_string[1]);
+      if (res == 1) {
+        Serial.print("Errore nella creazione dell'utente!");
+        delay(3500);
+      } else if (res == 2) {
+        Serial.print("Utente già esistente!");
+        delay(3500);
+      } else {
+        Serial.print("Utente creato con successo!");
+        delay(3500);        
+      }
+      break;
+    }
+
+    case 2: {
+      // LOGIN UTENTE
+
+      // start string splitting
+      char *data[3];
+      for (int i = 0; i < 3 && token != NULL; i++) {
+        token = strtok(NULL, "-");
+        data[i] = token;
+
+        if (i == 0)
+          continue;
+
+        String char_to_string(data[i]);
+        entry_string[i - 1] = char_to_string;
+      }
+      // end string splitting
+
+      if (logUser(entry_string[0], entry_string[1])) {
+        Serial.print("Accesso effettuato con successo!");
+        delay(3500);
+      } else {
+        Serial.print("Credenziali errate!");
+        delay(3500);        
+      }
+      break;
+    }
+
+    case 3: {
+      // AGGIUNGI CREDENZIALI
+
+      // start string splitting
+      char *data[5];
+      for (int i = 0; i < 5 && token != NULL; i++) {
+        token = strtok(NULL, "-");
+        data[i] = token;
+
+        if (i == 0)
+          continue;
+
+        String char_to_string(data[i]);
+        entry_string[i - 1] = char_to_string;
+      }
+      // end string splitting
+
+      int res = addPassword(entry_string[0], entry_string[1], entry_string[2], entry_string[3]);
+      if (res == 1) {
+        Serial.print("Errore nel salvataggio delle credenziali!");
+        delay(3500);
+      } else if (res == 2) {
+        Serial.print("Errore: credenziali errate!");
+        delay(3500);        
+      } else {
+        Serial.print("Credenziali memorizzate con successo!");
+        delay(3500);        
+      }
+      break;
+    }
+
+    case 4: {
+      // OTTIENI CREDENZIALI
+
+      // start string splitting
+      char *data[4];
+      for (int i = 0; i < 4 && token != NULL; i++) {
+        token = strtok(NULL, "-");
+        data[i] = token;
+
+        if (i == 0)
+          continue;
+
+        String char_to_string(data[i]);
+        entry_string[i - 1] = char_to_string;
+      }
+      // end string splitting
+
+      String res = getPassword(entry_string[0], entry_string[1], entry_string[2]);
+      if (res == "") {
+        Serial.print("Errore nel recuper delle credenziali!");
+        delay(3500);
+      } else {
+        Serial.print("Credenziali recuperate con successo!");
+        delay(3500);        
+      }
+      break;
+    }
+
+    case 5: {
+      // ELIMINA CREDENZIALI
+
+      // start string splitting
+      char *data[4];
+      for (int i = 0; i < 4 && token != NULL; i++) {
+        token = strtok(NULL, "-");
+        data[i] = token;
+
+        if (i == 0)
+          continue;
+
+        String char_to_string(data[i]);
+        entry_string[i - 1] = char_to_string;
+      }
+      // end string splitting
+
+      int res = deletePassword(entry_string[0], entry_string[1], entry_string[2]);
+      if (res == 1) {
+        Serial.print("Errore nell'eliminazione delle credenziali!");
+        delay(3500);
+      } else if (res == 2) {
+        Serial.print("Errore: credenziali errate!");
+        delay(3500);        
+      } else {
+        Serial.print("Credenziali eliminate con successo!");
+        delay(3500);        
+      }
+      break;
+    }
+  }
+
+  /*
+  switch (op) {
+    case 1:
+    {
+      // ADD
+      // start split string
+      char *data[3];
+
+      for (int i = 0; i < 3 && token != NULL; i++) {
+        token = strtok(NULL, "-");
+        data[i] = token;
+
+        if (i == 0)
+          continue;
+
+        String char_to_string(data[i]);
+        entry_string[i - 1] = cipher->encryptString(char_to_string);
+      }
+      // end split string
+      
+      //Chiedere data[0] cosa sia
+      if (addPassword(entry_string[0], entry_string[1], entry_string[2], entry_string[3])) {
+        Serial.print("Add Success!");
+
+        delay(3500);
+      } else {
+        Serial.print("Add Error!");
+
+        delay(3500);
+      }
+      break;
+    }
 
     case 2:
-      {  //UPDATE
-         /*split string*/
-        char *data[4];
+    {  
+      // UPDATE
+      // split string
+      char *data[4];
 
-        for (int i = 0; i < 4 && token != NULL; i++) {
-          token = strtok(NULL, "-");
-          data[i] = token;
+      for (int i = 0; i < 4 && token != NULL; i++) {
+        token = strtok(NULL, "-");
+        data[i] = token;
 
-          if (i < 2)
-            continue;
+        if (i < 2)
+          continue;
 
-          String char_to_string(data[i]);
+        String char_to_string(data[i]);
 
-          if (strcmp(data[i], "NULL") != 0)
-            entry_string[i - 2] = cipher->encryptString(char_to_string);
-          else
-            entry_string[i - 2] = char_to_string;
-        }
-        /*end split string*/
-        //data[0]
-        if (addPassword(entry_string[0], entry_string[1], entry_string[2], entry_string[3])) {
-          Serial.print("Update Success!");
-
-          delay(3500);
-        } else {
-          Serial.print("Update Error!");
-
-          delay(3500);
-        }
-        break;
+        if (strcmp(data[i], "NULL") != 0)
+          entry_string[i - 2] = cipher->encryptString(char_to_string);
+        else
+          entry_string[i - 2] = char_to_string;
       }
+      // end split string
+
+      //data[0]
+      if (addPassword(entry_string[0], entry_string[1], entry_string[2], entry_string[3])) {
+        Serial.print("Update Success!");
+
+        delay(3500);
+      } else {
+        Serial.print("Update Error!");
+
+        delay(3500);
+      }
+      break;
+    }
 
     case 3:
-      {  //RIMUOVO
-        char *data = strtok(NULL, "-");
+    {  
+      // RIMUOVO
+      char *data = strtok(NULL, "-");
 
-        if (deletePassword(entry_string[0], entry_string[1], entry_string[2])) {
-          Serial.print("Delete Success!");
+      if (deletePassword(entry_string[0], entry_string[1], entry_string[2])) {
+        Serial.print("Delete Success!");
 
-          delay(3500);
-        } else {
-          Serial.print("Delete Error!");
+        delay(3500);
+      } else {
+        Serial.print("Delete Error!");
 
-          delay(3500);
-        }
-        break;
+        delay(3500);
       }
+      break;
+    }
   }
+  */
 
   Serial.print("Esp32 connected to server ");
   return;
