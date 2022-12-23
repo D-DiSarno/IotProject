@@ -23,20 +23,7 @@ bool connectionToServer() {
   return true;
 }
 
-void startCommunicationToServer(String str) {
-  client.println(str.length());
-  client.println(str);
-
-  /* call some send client if str excedes of 16384 bytes*/
-  size_t maxChunk = 16384;
-  int numOfChunks = (int)str.length() / maxChunk;
-  int counterChars = 0;
-
-  for (int i = 0; i < numOfChunks + 1; i++) {
-    client.println(str.substring(counterChars, counterChars + maxChunk));
-    counterChars += maxChunk + 1;
-  }
-
+void startCommunicationToServer() {
   String entry = "";
   int op = 0;
 
@@ -100,6 +87,8 @@ void update_credentials(int op, String entry) {
         Serial.print("Utente creato con successo!");
         delay(3500);        
       }
+      client.println(res); // LEGGI QUI PER CAPIRE COME INVIARE I DATI
+      Serial.println("");
       break;
     }
 
