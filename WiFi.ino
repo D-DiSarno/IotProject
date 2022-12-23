@@ -4,11 +4,11 @@ void connectWiFi() {
     WiFi.begin(ssid, password);
     Serial.println("\nConnecting");
 
-    //prova a connettersi
     while (WiFi.status() != WL_CONNECTED) {
       Serial.print(".");
       delay(100);
     }
+    Serial.println("");
 
     if (connectionToServer()) {
       Serial.println("\nConnected to the WiFi network");
