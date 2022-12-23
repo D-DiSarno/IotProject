@@ -22,14 +22,16 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 Cipher* cipher = new Cipher();
 
-const char* hostname = "example.org";
-unsigned int port = 11111;
-WiFiClientSecure client(hostname);
-
 int getUserPassword(String);
 int createUser(String, String);
 int addPassword(String, String, String, String);
 int deletePassword(String, String, String);
+
+
+
+const char* hostname = "example.org";
+unsigned int port = 11111;
+WiFiClientSecure client(hostname);
 
 const char* test_root_ca = \
   "-----BEGIN CERTIFICATE-----\n" \
