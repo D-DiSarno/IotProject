@@ -208,6 +208,14 @@ void update_credentials(int op, String entry) {
       }
       break;
     }
+    case 6 :{ //COME ARRIVO QUI?
+      //RFID
+      while(!checkRFID()){
+        
+      }else client.send(true);
+
+      break;
+    }
   }
 
   /*
