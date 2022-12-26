@@ -21,12 +21,9 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 Cipher* cipher = new Cipher();
 
-
 int createUser(String, String, String);
 int addPassword(String, String, String, String, String);
 int deletePassword(String, String, String);
-
-
 
 const char* hostname = "example.org";
 unsigned int port = 11111;
@@ -58,7 +55,6 @@ const char* test_root_ca = \
   "JkPm\n" \
   "-----END CERTIFICATE-----\n";
 
-// You can use x.509 client certificates if you want
 const char* test_client_key = \
   "-----BEGIN RSA PRIVATE KEY-----\n" \
   "MIIEpQIBAAKCAQEA21VzTHsxzVYiJyzXp1nUXV9KJPPa0zxLGXi1u7X+JSroHby5\n" \

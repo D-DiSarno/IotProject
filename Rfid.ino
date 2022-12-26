@@ -26,13 +26,13 @@ void array_to_string(byte array[], unsigned int len, char buffer[]) {
 
 
 String getUID() {
+  Serial.println("Avvicina carta...");
+  
   while (true) {
-    Serial.println("Avvicina carta");
-    delay(2000);
     if (mfrc522.PICC_IsNewCardPresent()) {  // new tag is available
       if (mfrc522.PICC_ReadCardSerial()) {  // NUID has been readed
-        Serial.println("Carta riconosciuta");
-        mfrc522.PICC_DumpToSerial(&(mfrc522.uid));  // Display card details in serial Monitor.
+        Serial.println("Carta riconosciuta.");
+        // mfrc522.PICC_DumpToSerial(&(mfrc522.uid));  // Display card details in serial Monitor.
         char str[32] = "";
         array_to_string(mfrc522.uid.uidByte, 4, str);
         String readid = String(str);
@@ -41,5 +41,6 @@ String getUID() {
     }
   }
 
-  return "UID non riconosciuto";
+  Serial.println("Carta NON riconosciuta.");
+  return "";
 }

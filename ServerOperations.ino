@@ -75,19 +75,22 @@ void update_credentials(int op, String entry) {
         entry_string[i - 1] = char_to_string;
       }
       // end string splitting
-      String uid=getUID();
-      int res = createUser(entry_string[0], entry_string[1],uid);
+
+      String uid = getUID();
+      int res = createUser(entry_string[0], entry_string[1], uid);
+      client.println(res);
       if (res == 1) {
-        Serial.print("Errore nella creazione dell'utente!");
+        Serial.println("Errore nella creazione dell'utente!");
         delay(3500);
       } else if (res == 2) {
-        Serial.print("Utente già esistente!");
+        Serial.println("Utente già esistente!");
         delay(3500);
       } else {
-        Serial.print("Utente creato con successo!");
-        delay(3500);        
+        Serial.println("Utente creato con successo!");
+        delay(3500);
+        client.println(uid);
+        delay(3500);
       }
-      client.println(res); // LEGGI QUI PER CAPIRE COME INVIARE I DATI
       Serial.println("");
       break;
     }
@@ -108,14 +111,17 @@ void update_credentials(int op, String entry) {
         entry_string[i - 1] = char_to_string;
       }
       // end string splitting
-       String uid=getUID();
-      if (logUser(entry_string[0], entry_string[1],uid)) {
-        Serial.print("Accesso effettuato con successo!");
-        client.println(2);
+      
+      String uid = getUID(); 
+      if (logUser(entry_string[0], entry_string[1], uid)) {
+        Serial.println("Accesso effettuato con successo!");
+        client.println("0");
+        delay(3500);
+        client.println(uid);
         delay(3500);
       } else {
-         client.println(1);
-        Serial.print("Credenziali errate!");
+        client.println("1");
+        Serial.println("Credenziali errate!");
         delay(3500);        
       }
       break;
@@ -139,44 +145,18 @@ void update_credentials(int op, String entry) {
       // end string splitting
 
       int res = addPassword(entry_string[0], entry_string[1], entry_string[2], entry_string[3],entry_string[4]);
+      client.println(res);
       if (res == 1) {
-        Serial.print("Errore nel salvataggio delle credenziali!");
+        Serial.println("Errore nel salvataggio delle credenziali!");
         delay(3500);       
       } else {
-        Serial.print("Credenziali memorizzate con successo!");
+        Serial.println("Credenziali memorizzate con successo!");
         delay(3500);        
       }
       break;
     }
 
     case 4: {
-      // OTTIENI CREDENZIALI
-
-      // start string splitting
-      char *data[5];
-      for (int i = 0; i < 4 && token != NULL; i++) {
-        token = strtok(NULL, "-");
-        data[i] = token;
-
-        if (i == 0)
-          continue;
-
-        String char_to_string(data[i]);
-        entry_string[i - 1] = char_to_string;
-      }
-      // end string splitting
-      String res = getPassword(entry_string[0], entry_string[1], entry_string[2],entry_string[3]);
-      if (res == "Errore") {
-        Serial.print("Errore nel recuper delle credenziali!");
-        delay(3500);
-      } else {
-        Serial.print("Credenziali recuperate con successo!");
-        delay(3500);        
-      }
-      break;
-    }
-
-    case 5: {
       // ELIMINA CREDENZIALI
 
       // start string splitting
@@ -194,12 +174,45 @@ void update_credentials(int op, String entry) {
       // end string splitting
 
       int res = deletePassword(entry_string[0], entry_string[1], entry_string[2], entry_string[3]);
+      client.println(res);
       if (res == 1) {
-        Serial.print("Errore nell'eliminazione delle credenziali!");
+        Serial.println("Errore nell'eliminazione delle credenziali!");
         delay(3500);
       } else {
-        Serial.print("Credenziali eliminate con successo!");
+        Serial.println("Credenziali eliminate con successo!");
         delay(3500);        
+      }
+      break;
+    }
+
+    case 5: {
+      // OTTIENI CREDENZIALI
+
+      // start string splitting
+      char *data[5];
+      for (int i = 0; i < 4 && token != NULL; i++) {
+        token = strtok(NULL, "-");
+        data[i] = token;
+
+        if (i == 0)
+          continue;
+
+        String char_to_string(data[i]);
+        entry_string[i - 1] = char_to_string;
+      }
+      // end string splitting
+
+      String res = getPassword(entry_string[0], entry_string[1], entry_string[2],entry_string[3]);
+      if (res == "") {
+        Serial.println("Errore nel recupero delle credenziali!");
+        client.println("1");
+        delay(3500);
+      } else {
+        Serial.println("Credenziali recuperate con successo!");
+        client.println("0");
+        delay(3500);
+        client.println(res);
+        delay(3500); 
       }
       break;
     }
