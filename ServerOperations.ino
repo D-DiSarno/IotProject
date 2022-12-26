@@ -212,7 +212,7 @@ void update_credentials(int op, String entry) {
       //RFID
       while(!checkRFID()){
         
-      }else client.send(true);
+      }else client.println(0);
 
       break;
     }
