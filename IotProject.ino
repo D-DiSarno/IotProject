@@ -17,14 +17,13 @@
 const char* ssid = "hotspot_iot";
 const char* password = "hotspot_iot";
 
-String card1 = "FFFFFFFF";  // Change this value to the UID of your card.
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 Cipher* cipher = new Cipher();
 
-int getUserPassword(String);
-int createUser(String, String);
-int addPassword(String, String, String, String);
+
+int createUser(String, String, String);
+int addPassword(String, String, String, String, String);
 int deletePassword(String, String, String);
 
 

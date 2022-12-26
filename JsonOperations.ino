@@ -136,7 +136,7 @@ String getPassword(String username, String password, String tag, String serviceN
     }
   }
 
-  return "";
+  return "Errore";
 }
 
 void clearMemory() {
