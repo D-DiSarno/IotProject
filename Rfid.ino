@@ -23,30 +23,24 @@ void array_to_string(byte array[], unsigned int len, char buffer[]) {
   }
   buffer[len * 2] = '\0';
 }
-int checkRFID(){
+
+int checkRFID() {
   Serial.println("Avvicina carta");
-   delay(2000);
-   if (!mfrc522.PICC_IsNewCardPresent()) {
+  delay(2000);
+  if (!mfrc522.PICC_IsNewCardPresent()) {
     return;
   }
 
   if (!mfrc522.PICC_ReadCardSerial()) {
     return;
   }
- Serial.println("Carta riconosciuta");
+  Serial.println("Carta riconosciuta");
   mfrc522.PICC_DumpToSerial(&(mfrc522.uid));  // Display card details in serial Monitor.
   char str[32] = "";
   array_to_string(mfrc522.uid.uidByte, 4, str);
   String readid = String(str);
+}
 
-  if (readid == card1) {
-    return 1;
-    //getUser(card1);
-   //AUTH
-  //METTERE COSA DEVE FARE 
-  } else {
-    Serial.println("Accesso non autorizzato");
-    return 0;
-  }
- 
+String getUID() {
+  return "";
 }

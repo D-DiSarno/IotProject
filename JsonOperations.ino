@@ -1,6 +1,4 @@
-
-int createUser(String username, String password) {
-  Serial.println("creo");
+int createUser(String username, String password, String tag) {
   if (!SPIFFS.begin(true)) {
     return 1;
   }
@@ -12,6 +10,7 @@ int createUser(String username, String password) {
   StaticJsonDocument<2048> doc;
   doc["user"] = username;
   doc["password"] = password;
+  doc["tag"] = tag;
   JsonArray credentials = doc.createNestedArray("credentials");
 
   File file = SPIFFS.open("/" + username + ".json", FILE_WRITE);
@@ -21,30 +20,10 @@ int createUser(String username, String password) {
     serializeJsonPretty(doc, file);
     file.close();
   }
-  Serial.println("CREATO");
   return 0;
 }
-int getUserPassword(String username) {
-  if (!SPIFFS.begin(true)) {
-    return 1;
-  }
 
-  DynamicJsonDocument doc(2048);
-  File file = SPIFFS.open("/" + username + ".json");
-  deserializeJson(doc, file);
-  file.close();
-  JsonObject user = doc.as<JsonObject>();
-
-  if (user["user"] == username) {
-    String pwd = user["password"];
-    Serial.println(pwd);
-    return 0;
-  }
-
-
-  return 2;
-}
-bool logUser(String username, String password) {
+bool logUser(String username, String password, String tag) {
   if (!SPIFFS.begin(true)) {
     return false;
   }
@@ -55,11 +34,9 @@ bool logUser(String username, String password) {
   file.close();
   JsonObject user = doc.as<JsonObject>();
 
-  if (user["password"] == password) {
-
+  if (user["password"] == password && user["tag"] == tag) {
     return true;
   }
-
 
   return false;
 }
@@ -76,12 +53,12 @@ int removeUser(String username) {
   return 0;
 }
 
-int addPassword(String username, String password, String serviceName, String servicePassword) {
+int addPassword(String username, String password, String tag, String serviceName, String servicePassword) {
   if (!SPIFFS.begin(true)) {
     return 1;
   }
 
-  if (!logUser(username, password)) {
+  if (!logUser(username, password, tag)) {
     return 2;
   }
 
@@ -105,12 +82,12 @@ int addPassword(String username, String password, String serviceName, String ser
   return 0;
 }
 
-int deletePassword(String username, String password, String serviceName) {
+int deletePassword(String username, String password, String tag, String serviceName) {
   if (!SPIFFS.begin(true)) {
     return 1;
   }
 
-  if (!logUser(username, password)) {
+  if (!logUser(username, password, tag)) {
     return 2;
   }
 
@@ -138,12 +115,12 @@ int deletePassword(String username, String password, String serviceName) {
   return 0;
 }
 
-String getPassword(String username, String password, String serviceName) {
+String getPassword(String username, String password, String tag, String serviceName) {
   if (!SPIFFS.begin(true)) {
     return "";
   }
 
-  if (!logUser(username, password)) {
+  if (!logUser(username, password, tag)) {
     return "";
   }
 
