@@ -55,7 +55,7 @@ void update_credentials(int op, String entry) {
   char buffer[str_len];
   entry.toCharArray(buffer, str_len);
 
-  char *token = strtok(buffer, "-");
+  char *token = strtok(buffer, "Æ");
   String entry_string[4];
 
   switch (op) {
@@ -63,16 +63,12 @@ void update_credentials(int op, String entry) {
       // CREA UTENTE
 
       // start string splitting
-      char *data[3];
-      for (int i = 0; i < 3 && token != NULL; i++) {
-        token = strtok(NULL, "-");
+      char *data[2];
+      for (int i = 0; i < 2 && token != NULL; i++) {
+        token = strtok(NULL, "Æ");
         data[i] = token;
-
-        if (i == 0)
-          continue;
-
         String char_to_string(data[i]);
-        entry_string[i - 1] = char_to_string;
+        entry_string[i] = char_to_string;
       }
       // end string splitting
 
@@ -101,7 +97,7 @@ void update_credentials(int op, String entry) {
       // start string splitting
       char *data[3];
       for (int i = 0; i < 3 && token != NULL; i++) {
-        token = strtok(NULL, "-");
+        token = strtok(NULL, "Æ");
         data[i] = token;
 
         if (i == 0)
@@ -133,7 +129,7 @@ void update_credentials(int op, String entry) {
       // start string splitting
       char *data[5];
       for (int i = 0; i < 5 && token != NULL; i++) {
-        token = strtok(NULL, "-");
+        token = strtok(NULL, "Æ");
         data[i] = token;
 
         if (i == 0)
@@ -162,7 +158,7 @@ void update_credentials(int op, String entry) {
       // start string splitting
       char *data[4];
       for (int i = 0; i < 4 && token != NULL; i++) {
-        token = strtok(NULL, "-");
+        token = strtok(NULL, "Æ");
         data[i] = token;
 
         if (i == 0)
@@ -191,7 +187,7 @@ void update_credentials(int op, String entry) {
       // start string splitting
       char *data[5];
       for (int i = 0; i < 4 && token != NULL; i++) {
-        token = strtok(NULL, "-");
+        token = strtok(NULL, "Æ");
         data[i] = token;
 
         if (i == 0)
@@ -215,9 +211,9 @@ void update_credentials(int op, String entry) {
         delay(3500); 
       }
       break;
-    }
-   
+    } 
   }
-  Serial.print("Esp32 connected to server ");
+
+  Serial.println("Esp32 connected to server ");
   return;
 }
