@@ -3,8 +3,6 @@
 #include <WiFi.h>
 #include "WiFiClientSecure.h"
 
-#include "Cipher.h"
-
 #include <MFRC522.h>
 
 #include <ArduinoJson.h>
@@ -18,8 +16,6 @@ const char* ssid = "hotspot_iot";
 const char* password = "hotspot_iot";
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
-
-Cipher* cipher = new Cipher();
 
 int createUser(String, String, String);
 int addPassword(String, String, String, String, String);
