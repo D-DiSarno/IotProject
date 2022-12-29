@@ -56,7 +56,7 @@ void update_credentials(int op, String entry) {
   entry.toCharArray(buffer, str_len);
 
   char *token = strtok(buffer, "Æ");
-  String entry_string[4];
+  String entry_string[5];
 
   switch (op) {
     case 1: {
